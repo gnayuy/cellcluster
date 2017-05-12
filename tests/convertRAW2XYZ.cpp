@@ -1,4 +1,4 @@
-// convert locations (x y z i f) to xyz
+// convert locations (x y z i f) to xyz/pcd data
 //
 // compilation: g++ -o convertRAW2XYZ convertRAW2XYZ.cpp
 //
@@ -173,6 +173,9 @@ int main(int argc, char* argv[])
     ofstream output(argv[2]);
     
     string suffix = "pcd";
+    
+    if(argc > 3)
+        suffix = argv[3];
     
     if(suffix == "pcd")
     {
