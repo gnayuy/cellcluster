@@ -1,4 +1,4 @@
-// convert locations (intensity x y z n) to xyz
+// convert locations (x y z i f) to xyz
 //
 // compilation: g++ -o convertRAW2XYZ convertRAW2XYZ.cpp
 //
@@ -58,11 +58,11 @@ int main(int argc, char* argv[])
                 
                 Node node;
                 
-                iss >> node.intensity;
-                
                 iss >> node.x;
                 iss >> node.y;
                 iss >> node.z;
+                
+                iss >> node.intensity;
                 
                 iss >> node.n;
                 
@@ -172,23 +172,69 @@ int main(int argc, char* argv[])
     // save output
     ofstream output(argv[2]);
     
-    output << "OFF\n";
-    output << n << " 0 0 \n";
-    output << endl;
+    string suffix = "pcd";
     
-    if (output.is_open())
+    if(suffix == "pcd")
     {
-        for(int i=0; i<n; i++)
+        // .pcd
+        output << "# .PCD v0.7 - Point Cloud Data file format\n";
+        output << "VERSION 0.7\n";
+        output << "FIELDS x y z\n";
+        output << "SIZE 4 4 4\n";
+        output << "TYPE F F F\n";
+        output << "COUNT 1 1 1\n";
+        output << "WIDTH "<<n<<"\n";
+        output << "HEIGHT 1\n";
+        output << "VIEWPOINT 0 0 0 1 0 0 0\n";
+        output << "POINTS "<<n<<"\n";
+        output << "DATA ascii\n";
+        
+        if (output.is_open())
         {
-            output << nodeList[i].x << " " << nodeList[i].y << " " << nodeList[i].z << endl;
+            for(int i=0; i<n; i++)
+            {
+                float dist = max.x - min.x;
+                nodeList[i].x = 2 * nodeList[i].x / dist - 1;
+                
+                dist = max.y - min.y;
+                nodeList[i].y = 2 * nodeList[i].y / dist - 1;
+                
+                dist = max.z - min.z;
+                nodeList[i].z = 2 * nodeList[i].z / dist - 1;
+                
+                output << nodeList[i].x << " " << nodeList[i].y << " " << nodeList[i].z << endl;
+            }
+            output.close();
         }
-        output.close();
+        else
+        {
+            cout << "Unable to open file"<<argv[2]<<endl;
+        }
+
+        
     }
     else
     {
-        cout << "Unable to open file"<<argv[2]<<endl;
-    }
+        // .off
+        output << "OFF\n";
+        output << n << " 0 0 \n";
+        output << endl;
+        
+        if (output.is_open())
+        {
+            for(int i=0; i<n; i++)
+            {
+                output << nodeList[i].x - min.x << " " << nodeList[i].y - min.y << " " << nodeList[i].z - min.z << endl;
+            }
+            output.close();
+        }
+        else
+        {
+            cout << "Unable to open file"<<argv[2]<<endl;
+        }
 
+    }
+    
     //
     return 0;
 }
