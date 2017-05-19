@@ -1,2 +1,2 @@
-# Benchmark
-Benchmarking of all publicly accessible implementations of quantifying/clustering methods.
+# Benchmarks
+Benchmarking all publicly accessible implementations of quantifying/clustering methods.
